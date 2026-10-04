@@ -25,8 +25,28 @@
             <h2 th:text="#{tree.section.details}">Tree Details</h2>
             <div class="field">
                 <label for="species" th:text="#{tree.field.species}">Species</label>
-                <input type="text" id="species" th:field="*{species}"/>
+                <select id="species" th:field="*{species}" onchange="vocnjakToggleSpeciesOther()">
+                    <option value="Apple" th:text="#{species.apple}">Apple</option>
+                    <option value="Apricot" th:text="#{species.apricot}">Apricot</option>
+                    <option value="Cherry" th:text="#{species.cherry}">Cherry</option>
+                    <option value="Dogwood berry" th:text="#{species.dogwoodBerry}">Dogwood berry</option>
+                    <option value="Hazelnut" th:text="#{species.hazelnut}">Hazelnut</option>
+                    <option value="Pear" th:text="#{species.pear}">Pear</option>
+                    <option value="Plum" th:text="#{species.plum}">Plum</option>
+                    <option value="Quince" th:text="#{species.quince}">Quince</option>
+                    <option value="Sorb fruit" th:text="#{species.sorbFruit}">Sorb fruit</option>
+                    <option value="Sour cherry" th:text="#{species.sourCherry}">Sour cherry</option>
+                    <option value="Vineyard peach" th:text="#{species.vineyardPeach}">Vineyard peach</option>
+                    <option value="Walnut" th:text="#{species.walnut}">Walnut</option>
+                    <option value="Wild pear (Takisa)" th:text="#{species.wildPearTakisa}">Wild pear (Takisa)</option>
+                    <option th:value="${T(com.vocnjak.domain.FruitSpeciesCatalog).OTHER}" th:text="#{species.other}">Other</option>
+                </select>
                 <span class="error" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></span>
+            </div>
+            <div class="field" id="speciesOtherField" th:style="${speciesIsOther} ? '' : 'display:none'">
+                <label for="speciesOther" th:text="#{tree.field.speciesOther}">Specify species</label>
+                <input type="text" id="speciesOther" th:field="*{speciesOther}"/>
+                <span class="error" th:if="${#fields.hasErrors('speciesOther')}" th:errors="*{speciesOther}"></span>
             </div>
             <div class="field">
                 <label for="variety" th:text="#{tree.field.variety}">Variety / Cultivar</label>
@@ -140,5 +160,6 @@
 </div>
 
 <p><a class="back-link" th:href="@{/orchards/{id}(id=${orchard.id})}" th:text="#{common.backToGrid}">&larr; Back to grid</a></p>
+<script th:src="@{/js/tree-form.js}"></script>
 </body>
 </html>

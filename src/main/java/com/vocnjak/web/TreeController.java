@@ -1,5 +1,6 @@
 package com.vocnjak.web;
 
+import com.vocnjak.domain.FruitSpeciesCatalog;
 import com.vocnjak.domain.Tree;
 import com.vocnjak.service.OrchardService;
 import com.vocnjak.service.TreatmentService;
@@ -59,6 +60,7 @@ public class TreeController {
         model.addAttribute("orchard", orchardService.getOrchard(orchardId));
         model.addAttribute("row", row);
         model.addAttribute("col", col);
+        model.addAttribute("speciesIsOther", false);
         model.addAttribute("treeForm", new TreeForm());
         return "trees/form";
     }
@@ -71,15 +73,32 @@ public class TreeController {
                           BindingResult bindingResult,
                           Model model,
                           RedirectAttributes redirectAttributes) {
+        boolean speciesIsOther = isSpeciesOther(treeForm);
+        validateSpeciesOther(treeForm, bindingResult);
         if (bindingResult.hasErrors()) {
             model.addAttribute("orchard", orchardService.getOrchard(orchardId));
             model.addAttribute("row", row);
             model.addAttribute("col", col);
+            model.addAttribute("speciesIsOther", speciesIsOther);
             return "trees/form";
         }
+        finalizeSpecies(treeForm);
         try {
             treeService.addTree(orchardId, row, col, treeForm, treeForm.getImage());
         } catch (CellOccupiedException | OutOfBoundsException | InvalidImageException e) {
+            redirectAttributes.addFlashAttribute("error", resolve(e));
+        }
+        return "redirect:/orchards/" + orchardId;
+    }
+
+    @PostMapping("/empty")
+    public String markEmpty(@PathVariable Long orchardId,
+                             @RequestParam int row,
+                             @RequestParam int col,
+                             RedirectAttributes redirectAttributes) {
+        try {
+            treeService.markEmpty(orchardId, row, col);
+        } catch (CellOccupiedException | OutOfBoundsException e) {
             redirectAttributes.addFlashAttribute("error", resolve(e));
         }
         return "redirect:/orchards/" + orchardId;
@@ -96,12 +115,14 @@ public class TreeController {
     @GetMapping("/{treeId}/edit")
     public String editForm(@PathVariable Long orchardId, @PathVariable Long treeId, Model model) {
         Tree tree = treeService.getTree(treeId);
+        TreeForm form = toForm(tree);
         model.addAttribute("orchard", orchardService.getOrchard(orchardId));
         model.addAttribute("row", tree.getRowIndex());
         model.addAttribute("col", tree.getColIndex());
         model.addAttribute("treeId", treeId);
         model.addAttribute("hasImage", tree.hasImage());
-        model.addAttribute("treeForm", toForm(tree));
+        model.addAttribute("speciesIsOther", isSpeciesOther(form));
+        model.addAttribute("treeForm", form);
         return "trees/form";
     }
 
@@ -112,14 +133,18 @@ public class TreeController {
                           BindingResult bindingResult,
                           Model model,
                           RedirectAttributes redirectAttributes) {
+        boolean speciesIsOther = isSpeciesOther(treeForm);
+        validateSpeciesOther(treeForm, bindingResult);
         if (bindingResult.hasErrors()) {
             Tree tree = treeService.getTree(treeId);
             model.addAttribute("orchard", orchardService.getOrchard(orchardId));
             model.addAttribute("row", tree.getRowIndex());
             model.addAttribute("col", tree.getColIndex());
             model.addAttribute("treeId", treeId);
+            model.addAttribute("speciesIsOther", speciesIsOther);
             return "trees/form";
         }
+        finalizeSpecies(treeForm);
         try {
             treeService.updateTree(treeId, treeForm, treeForm.getImage());
         } catch (InvalidImageException e) {
@@ -149,9 +174,31 @@ public class TreeController {
         return messageSource.getMessage(e.getCode(), e.getArgs(), LocaleContextHolder.getLocale());
     }
 
+    private boolean isSpeciesOther(TreeForm form) {
+        return FruitSpeciesCatalog.OTHER.equals(form.getSpecies());
+    }
+
+    private void validateSpeciesOther(TreeForm form, BindingResult bindingResult) {
+        if (isSpeciesOther(form) && (form.getSpeciesOther() == null || form.getSpeciesOther().isBlank())) {
+            bindingResult.rejectValue("speciesOther", "required",
+                    messageSource.getMessage("error.speciesOtherRequired", null, LocaleContextHolder.getLocale()));
+        }
+    }
+
+    private void finalizeSpecies(TreeForm form) {
+        if (isSpeciesOther(form)) {
+            form.setSpecies(form.getSpeciesOther().trim());
+        }
+    }
+
     private TreeForm toForm(Tree tree) {
         TreeForm form = new TreeForm();
-        form.setSpecies(tree.getSpecies());
+        if (FruitSpeciesCatalog.isCanonical(tree.getSpecies())) {
+            form.setSpecies(tree.getSpecies());
+        } else {
+            form.setSpecies(FruitSpeciesCatalog.OTHER);
+            form.setSpeciesOther(tree.getSpecies());
+        }
         form.setVariety(tree.getVariety());
         form.setRootstock(tree.getRootstock());
         form.setPlantingMonth(tree.getPlantingMonth());

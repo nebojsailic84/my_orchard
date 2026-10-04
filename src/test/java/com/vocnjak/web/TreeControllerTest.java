@@ -10,6 +10,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -141,6 +142,32 @@ class TreeControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG))
                 .andExpect(content().bytes(imageBytes));
+    }
+
+    @Test
+    void markEmpty_thenShowsPlaceholderInGrid_andCanBeRemoved() throws Exception {
+        String orchardUrl = createOrchard("Placeholder Orchard", 2, 2);
+
+        mockMvc.perform(post(orchardUrl + "/trees/empty")
+                        .param("row", "0")
+                        .param("col", "0"))
+                .andExpect(status().is3xxRedirection());
+
+        String gridPage = mockMvc.perform(get(orchardUrl))
+                .andReturn().getResponse().getContentAsString();
+        assertThat(gridPage).contains("cell placeholder");
+
+        String marker = orchardUrl + "/trees/";
+        int start = gridPage.indexOf(marker);
+        int end = gridPage.indexOf('"', start);
+        String deleteUrl = gridPage.substring(start, end);
+
+        mockMvc.perform(post(deleteUrl))
+                .andExpect(status().is3xxRedirection());
+
+        String gridPageAfter = mockMvc.perform(get(orchardUrl))
+                .andReturn().getResponse().getContentAsString();
+        assertThat(gridPageAfter).doesNotContain("cell placeholder");
     }
 
     private String extractTreeUrl(String gridPageHtml, String orchardUrl) {

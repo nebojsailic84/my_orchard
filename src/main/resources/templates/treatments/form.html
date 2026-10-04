@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{treatment.form.title}">Vocnjak — Add treatment</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/langswitch :: langswitch}"></div>
+
+<h1 th:text="#{treatment.form.heading(${tree.species})}">Add treatment</h1>
+
+<div class="card">
+    <form th:action="@{/orchards/{orchardId}/trees/{treeId}/treatments(orchardId=${orchardId},treeId=${tree.id})}"
+          th:object="${treatmentForm}" method="post">
+        <div class="field">
+            <label for="productName" th:text="#{treatment.field.productName}">Product name</label>
+            <input type="text" id="productName" th:field="*{productName}"/>
+            <span class="error" th:if="${#fields.hasErrors('productName')}" th:errors="*{productName}"></span>
+        </div>
+        <div class="field">
+            <label for="rate" th:text="#{treatment.field.rate}">Rate</label>
+            <input type="text" id="rate" th:field="*{rate}" th:placeholder="#{treatment.field.ratePlaceholder}"/>
+            <span class="error" th:if="${#fields.hasErrors('rate')}" th:errors="*{rate}"></span>
+        </div>
+        <div class="field">
+            <label for="applicationDate" th:text="#{treatment.field.applicationDate}">Application date</label>
+            <input type="date" id="applicationDate" th:field="*{applicationDate}"/>
+            <span class="error" th:if="${#fields.hasErrors('applicationDate')}" th:errors="*{applicationDate}"></span>
+        </div>
+        <div class="field">
+            <label for="harvestIntervalDays" th:text="#{treatment.field.harvestIntervalDays}">Harvest interval (days)</label>
+            <input type="number" id="harvestIntervalDays" th:field="*{harvestIntervalDays}" min="0"/>
+            <span class="error" th:if="${#fields.hasErrors('harvestIntervalDays')}" th:errors="*{harvestIntervalDays}"></span>
+        </div>
+        <button class="btn" type="submit" th:text="#{common.save}">Save</button>
+    </form>
+</div>
+
+<p><a class="back-link" th:href="@{/orchards/{orchardId}/trees/{treeId}(orchardId=${orchardId},treeId=${tree.id})}" th:text="#{common.backToTree}">&larr; Back to tree</a></p>
+</body>
+</html>

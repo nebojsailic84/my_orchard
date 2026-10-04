@@ -15,6 +15,9 @@ public class TreeForm {
     private String species;
 
     @Size(max = 100)
+    private String speciesOther;
+
+    @Size(max = 100)
     private String variety;
 
     @Size(max = 100)
@@ -76,6 +79,14 @@ public class TreeForm {
 
     public void setSpecies(String species) {
         this.species = species;
+    }
+
+    public String getSpeciesOther() {
+        return speciesOther;
+    }
+
+    public void setSpeciesOther(String speciesOther) {
+        this.speciesOther = speciesOther;
     }
 
     public String getVariety() {

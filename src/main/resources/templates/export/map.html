@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${orchard.name}">Orchard Map</title>
+    <style>
+        body { font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif; font-size: 11px; color: #222; }
+        h1 { font-size: 20px; color: #2e5339; margin-bottom: 0; }
+        .subtitle { color: #666; margin-top: 2px; margin-bottom: 16px; }
+        table.map { border-collapse: collapse; width: 100%; }
+        table.map th, table.map td { border: 1px solid #ccc; text-align: center; vertical-align: middle; padding: 6px; }
+        table.map th { background: #e8f5e9; color: #2e5339; font-size: 10px; }
+        table.map td.empty { color: #bbb; }
+        table.map td.occupied { background: #fdfcfa; }
+        table.map td.placeholder { background: #f3f1ec; color: #999; }
+        table.map td .species { font-weight: bold; display: block; }
+        table.map td .variety { color: #666; font-size: 9px; display: block; }
+        .grass-icon { display: inline-block; width: 20px; height: 20px; }
+        .grass-icon svg { display: block; width: 100%; height: 100%; }
+        table.map td .empty-label { display: block; font-size: 9px; margin-top: 2px; }
+    </style>
+</head>
+<body>
+<h1 th:text="${orchard.name}">Orchard</h1>
+<p class="subtitle" th:text="#{export.map.title}">Printable map</p>
+
+<table class="map">
+    <tr>
+        <th></th>
+        <th th:each="colNum : ${#numbers.sequence(1, orchard.columns)}" th:text="${colNum}">1</th>
+    </tr>
+    <tr th:each="rowCells, rowStat : ${grid}">
+        <th th:text="${rowStat.index + 1}">1</th>
+        <td th:each="tree : ${rowCells}"
+            th:class="${tree == null} ? 'empty' : (${tree.emptySpot} ? 'placeholder' : 'occupied')">
+            <span th:if="${tree != null and tree.emptySpot}" class="grass-icon" th:insert="~{fragments/grass-icon :: grass}"></span>
+            <span th:if="${tree != null and tree.emptySpot}" class="empty-label" th:text="#{orchard.grid.emptySpotLabel}">Empty</span>
+            <span th:if="${tree != null and not tree.emptySpot}" class="species" th:text="${tree.species}">Species</span>
+            <span th:if="${tree != null and not tree.emptySpot and tree.variety != null}" class="variety" th:text="${tree.variety}">Variety</span>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

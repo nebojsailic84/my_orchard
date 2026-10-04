@@ -137,6 +137,31 @@ class TreeServiceTest {
     }
 
     @Test
+    void markEmpty_createsPlaceholder_whenCellFree() {
+        when(orchardRepository.findById(1L)).thenReturn(Optional.of(orchard));
+        when(treeRepository.existsByOrchardIdAndRowIndexAndColIndex(1L, 2, 3)).thenReturn(false);
+        when(treeRepository.save(any(Tree.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Tree tree = treeService.markEmpty(1L, 2, 3);
+
+        assertThat(tree.isEmptySpot()).isTrue();
+        assertThat(tree.getRowIndex()).isEqualTo(2);
+        assertThat(tree.getColIndex()).isEqualTo(3);
+        assertThat(tree.getSpecies()).isNull();
+    }
+
+    @Test
+    void markEmpty_throwsCellOccupiedException_whenOccupied() {
+        when(orchardRepository.findById(1L)).thenReturn(Optional.of(orchard));
+        when(treeRepository.existsByOrchardIdAndRowIndexAndColIndex(1L, 2, 3)).thenReturn(true);
+
+        assertThatThrownBy(() -> treeService.markEmpty(1L, 2, 3))
+                .isInstanceOf(CellOccupiedException.class);
+
+        verify(treeRepository, never()).save(any());
+    }
+
+    @Test
     void addTree_mapsAllNewTreeDetailFields() {
         when(orchardRepository.findById(1L)).thenReturn(Optional.of(orchard));
         when(treeRepository.existsByOrchardIdAndRowIndexAndColIndex(1L, 0, 0)).thenReturn(false);

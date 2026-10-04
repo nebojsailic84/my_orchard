@@ -53,6 +53,17 @@ public class TreeService {
         return tree;
     }
 
+    public Tree markEmpty(Long orchardId, int row, int col) {
+        Orchard orchard = orchardService.getOrchard(orchardId);
+        requireWithinBounds(orchard, row, col);
+        if (treeRepository.existsByOrchardIdAndRowIndexAndColIndex(orchardId, row, col)) {
+            throw new CellOccupiedException("error.cellOccupied", row, col);
+        }
+        Tree tree = new Tree(orchard, row, col);
+        tree.setEmptySpot(true);
+        return treeRepository.save(tree);
+    }
+
     public Tree updateTree(Long treeId, TreeForm form, MultipartFile image) {
         Tree tree = getTree(treeId);
         applyForm(tree, form);

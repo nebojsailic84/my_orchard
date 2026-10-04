@@ -32,20 +32,37 @@
     <tr th:each="rowCells, rowStat : ${grid}">
         <th class="grid-row-label" th:text="${rowStat.index + 1}">1</th>
         <td th:each="tree, colStat : ${rowCells}"
-            th:class="${tree == null} ? 'cell empty' : 'cell occupied'">
+            th:class="${tree == null} ? 'cell empty' : (${tree.emptySpot} ? 'cell placeholder' : 'cell occupied')">
             <a class="empty-link" th:if="${tree == null}"
                th:href="@{/orchards/{orchardId}/trees/new(orchardId=${orchard.id},row=${rowStat.index},col=${colStat.index})}">+</a>
-            <a class="tree-link" th:if="${tree != null}"
+            <form th:if="${tree == null}" class="mark-empty-form"
+                  th:action="@{/orchards/{orchardId}/trees/empty(orchardId=${orchard.id},row=${rowStat.index},col=${colStat.index})}"
+                  method="post">
+                <button class="mark-empty-btn" type="submit" th:title="#{orchard.grid.markEmptyTitle}">
+                    <span class="grass-icon grass-icon-sm" th:insert="~{fragments/grass-icon :: grass}"></span>
+                </button>
+            </form>
+            <form th:if="${tree != null and tree.emptySpot}" class="remove-empty-form"
+                  th:action="@{/orchards/{orchardId}/trees/{treeId}/delete(orchardId=${orchard.id},treeId=${tree.id})}"
+                  method="post">
+                <button class="remove-empty-btn" type="submit" th:title="#{orchard.grid.removeEmptyTitle}">
+                    <span class="grass-icon grass-icon-lg" th:insert="~{fragments/grass-icon :: grass}"></span>
+                </button>
+            </form>
+            <a class="tree-link" th:if="${tree != null and not tree.emptySpot}"
                th:href="@{/orchards/{orchardId}/trees/{treeId}(orchardId=${orchard.id},treeId=${tree.id})}">
                 <span class="tree-visual">
                     <img th:if="${tree.hasImage()}" class="tree-thumb"
                          th:src="@{/orchards/{orchardId}/trees/{treeId}/image(orchardId=${orchard.id},treeId=${tree.id})}"
                          th:alt="${tree.species}"/>
-                    <span th:unless="${tree.hasImage()}" class="tree-icon">🌳</span>
+                    <img th:if="${not tree.hasImage() and tree.speciesImageFileName != null}" class="tree-thumb"
+                         th:src="@{/images/fruits/{file}(file=${tree.speciesImageFileName})}"
+                         th:alt="${tree.species}"/>
+                    <span th:if="${not tree.hasImage() and tree.speciesImageFileName == null}" class="tree-icon">🌳</span>
                 </span>
                 <span class="tree-label" th:text="${tree.species}">Species</span>
             </a>
-            <div class="tree-tooltip" th:if="${tree != null}">
+            <div class="tree-tooltip" th:if="${tree != null and not tree.emptySpot}">
                 <strong th:text="${tree.species}">Species</strong>
                 <span th:if="${tree.variety}" th:text="${tree.variety}">Variety</span>
                 <dl>

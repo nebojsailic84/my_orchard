@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${orchard.name}">Orchard Report</title>
+    <style>
+        body { font-family: 'DejaVu Sans', Helvetica, Arial, sans-serif; font-size: 11px; color: #222; }
+        h1 { font-size: 20px; color: #2e5339; margin-bottom: 0; }
+        .subtitle { color: #666; margin-top: 2px; margin-bottom: 20px; }
+        .tree-block { page-break-inside: avoid; border: 1px solid #ccc; border-radius: 4px; padding: 10px 14px; margin-bottom: 14px; }
+        .tree-block h2 { font-size: 15px; color: #2e5339; margin: 0 0 2px; }
+        .tree-block .position { color: #666; font-size: 10px; margin-bottom: 8px; }
+        .section-title { font-size: 11px; font-weight: bold; color: #3f7d4f; text-transform: uppercase; margin: 10px 0 4px; border-top: 1px solid #e1ddd3; padding-top: 6px; }
+        table.fields { width: 100%; border-collapse: collapse; }
+        table.fields td { padding: 1px 6px 1px 0; vertical-align: top; }
+        table.fields td.label { color: #666; width: 140px; white-space: nowrap; }
+        table.treatments { width: 100%; border-collapse: collapse; margin-top: 2px; }
+        table.treatments td, table.treatments th { border: 1px solid #ddd; padding: 3px 6px; text-align: left; font-size: 10px; }
+    </style>
+</head>
+<body>
+<h1 th:text="${orchard.name}">Orchard</h1>
+<p class="subtitle" th:text="#{export.detailed.title}">Detailed report</p>
+
+<div class="tree-block" th:each="tree : ${trees}">
+    <h2 th:text="${tree.species}">Species</h2>
+    <p class="position" th:text="#{tree.position(${tree.rowIndex + 1},${tree.colIndex + 1})}">Position</p>
+
+    <div class="section-title" th:text="#{tree.section.details}">Tree Details</div>
+    <table class="fields">
+        <tr><td class="label" th:text="#{tree.field.variety}">Variety</td><td th:text="${tree.variety} ?: '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.rootstock}">Rootstock</td><td th:text="${tree.rootstock} ?: '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.plantingMonth}">Planting month</td><td th:text="${tree.plantingMonth != null} ? #{${'month.' + tree.plantingMonth}} : '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.plantingYear}">Planting year</td><td th:text="${tree.plantingYear} ?: '—'">-</td></tr>
+    </table>
+
+    <div class="section-title" th:text="#{tree.section.seasonal}">Seasonal Development</div>
+    <table class="fields">
+        <tr><td class="label" th:text="#{tree.field.budBreak}">Bud break</td><td th:text="${tree.budBreakMonth != null} ? #{${'month.' + tree.budBreakMonth}} : '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.bloom}">Bloom</td><td th:text="${tree.bloomMonth != null} ? #{${'month.' + tree.bloomMonth}} : '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.fruitSet}">Fruit set</td><td th:text="${tree.fruitSetMonth != null} ? #{${'month.' + tree.fruitSetMonth}} : '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.harvest}">Harvest</td><td th:text="${tree.harvestMonth != null} ? #{${'month.' + tree.harvestMonth}} : '—'">-</td></tr>
+    </table>
+
+    <div class="section-title" th:text="#{tree.section.problems}">Problems Observed</div>
+    <table class="fields">
+        <tr><td class="label" th:text="#{tree.field.pests}">Pests</td><td th:text="${tree.pests} ?: '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.diseases}">Diseases</td><td th:text="${tree.diseases} ?: '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.weatherDamage}">Weather damage</td><td th:text="${tree.weatherDamage} ?: '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.nutrientSymptoms}">Nutrient symptoms</td><td th:text="${tree.nutrientSymptoms} ?: '—'">-</td></tr>
+        <tr><td class="label" th:text="#{tree.field.treatmentsUsed}">Treatments used</td><td th:text="${tree.treatmentsUsed} ?: '—'">-</td></tr>
+    </table>
+
+    <div class="section-title" th:text="#{tree.section.safety}">Inputs and Safety</div>
+    <table class="treatments" th:if="${not #lists.isEmpty(treatmentsByTreeId.get(tree.id))}">
+        <tr>
+            <th th:text="#{treatment.field.productName}">Product</th>
+            <th th:text="#{treatment.field.rate}">Rate</th>
+            <th th:text="#{treatment.field.applicationDate}">Date</th>
+            <th th:text="#{treatment.field.harvestIntervalDays}">Harvest interval</th>
+        </tr>
+        <tr th:each="t : ${treatmentsByTreeId.get(tree.id)}">
+            <td th:text="${t.productName}">Product</td>
+            <td th:text="${t.rate} ?: '—'">Rate</td>
+            <td th:text="${t.applicationDate}">Date</td>
+            <td th:text="${t.harvestIntervalDays} ?: '—'">Interval</td>
+        </tr>
+    </table>
+    <p th:if="${#lists.isEmpty(treatmentsByTreeId.get(tree.id))}" th:text="#{treatment.empty}">No treatments logged yet.</p>
+
+    <div class="section-title" th:text="#{tree.field.notes}">Notes</div>
+    <p th:text="${tree.notes} ?: '—'">Notes</p>
+</div>
+</body>
+</html>

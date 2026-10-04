@@ -13,7 +13,6 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
@@ -42,9 +41,10 @@ public class Tree {
     @Min(0)
     private int colIndex;
 
+    private boolean emptySpot;
+
     // --- Tree Details ---
 
-    @NotBlank
     @Size(max = 100)
     private String species;
 
@@ -121,6 +121,14 @@ public class Tree {
 
     public Long getId() {
         return id;
+    }
+
+    public boolean isEmptySpot() {
+        return emptySpot;
+    }
+
+    public void setEmptySpot(boolean emptySpot) {
+        this.emptySpot = emptySpot;
     }
 
     public Orchard getOrchard() {
@@ -269,5 +277,9 @@ public class Tree {
 
     public boolean hasImage() {
         return imageContentType != null;
+    }
+
+    public String getSpeciesImageFileName() {
+        return FruitSpeciesCatalog.imageFileNameFor(species);
     }
 }
