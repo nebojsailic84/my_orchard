@@ -46,7 +46,10 @@
                   th:action="@{/orchards/{orchardId}/trees/{treeId}/delete(orchardId=${orchard.id},treeId=${tree.id})}"
                   method="post">
                 <button class="remove-empty-btn" type="submit" th:title="#{orchard.grid.removeEmptyTitle}">
-                    <span class="grass-icon grass-icon-lg" th:insert="~{fragments/grass-icon :: grass}"></span>
+                    <span class="tree-visual placeholder-visual">
+                        <span class="grass-icon grass-icon-lg" th:insert="~{fragments/grass-icon :: grass}"></span>
+                    </span>
+                    <span class="tree-label" th:text="#{orchard.grid.emptySpotLabel}">Empty</span>
                 </button>
             </form>
             <a class="tree-link" th:if="${tree != null and not tree.emptySpot}"
