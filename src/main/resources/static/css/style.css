@@ -259,6 +259,19 @@ a {
     object-fit: cover;
 }
 
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.5rem;
+    font-weight: normal;
+    cursor: pointer;
+}
+
+.checkbox-label input[type="checkbox"] {
+    width: auto;
+}
+
 /* Orchard list */
 
 .orchard-list {

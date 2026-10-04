@@ -2,9 +2,19 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
 <div class="lang-switch" th:fragment="langswitch">
-    <a href="?lang=en">EN</a>
+    <a href="?lang=en" class="lang-link" data-lang="en">EN</a>
     <span>|</span>
-    <a href="?lang=sr">SR</a>
+    <a href="?lang=sr" class="lang-link" data-lang="sr">SR</a>
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            document.querySelectorAll('.lang-switch .lang-link').forEach(function (link) {
+                var p = new URLSearchParams(params);
+                p.set('lang', link.getAttribute('data-lang'));
+                link.setAttribute('href', window.location.pathname + '?' + p.toString());
+            });
+        })();
+    </script>
 </div>
 </body>
 </html>

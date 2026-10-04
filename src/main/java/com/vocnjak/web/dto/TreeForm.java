@@ -73,6 +73,8 @@ public class TreeForm {
 
     private MultipartFile image;
 
+    private boolean removeImage;
+
     public String getSpecies() {
         return species;
     }
@@ -207,5 +209,13 @@ public class TreeForm {
 
     public void setImage(MultipartFile image) {
         this.image = image;
+    }
+
+    public boolean isRemoveImage() {
+        return removeImage;
+    }
+
+    public void setRemoveImage(boolean removeImage) {
+        this.removeImage = removeImage;
     }
 }

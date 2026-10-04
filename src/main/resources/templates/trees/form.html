@@ -148,6 +148,10 @@
                 <img class="current-photo"
                      th:src="@{/orchards/{orchardId}/trees/{treeId}/image(orchardId=${orchard.id},treeId=${treeId})}"
                      th:alt="#{tree.field.currentPhotoAlt}"/>
+                <label class="checkbox-label">
+                    <input type="checkbox" th:field="*{removeImage}"/>
+                    <span th:text="#{tree.field.removeImage}">Remove current photo</span>
+                </label>
             </div>
             <div class="field">
                 <label for="image" th:text="#{tree.field.photo}">Photo</label>

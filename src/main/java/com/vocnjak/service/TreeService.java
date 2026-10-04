@@ -67,6 +67,10 @@ public class TreeService {
     public Tree updateTree(Long treeId, TreeForm form, MultipartFile image) {
         Tree tree = getTree(treeId);
         applyForm(tree, form);
+        if (form.isRemoveImage() && (image == null || image.isEmpty())) {
+            deleteImageIfExists(treeId);
+            tree.setImageContentType(null);
+        }
         if (image != null && !image.isEmpty()) {
             tree.setImageContentType(storeImage(treeId, image));
         }
