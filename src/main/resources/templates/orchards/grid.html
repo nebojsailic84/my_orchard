@@ -63,10 +63,11 @@
                          th:alt="${tree.species}"/>
                     <span th:if="${not tree.hasImage() and tree.speciesImageFileName == null}" class="tree-icon">🌳</span>
                 </span>
-                <span class="tree-label" th:text="${tree.species}">Species</span>
+                <span class="tree-label"
+                      th:text="${not #strings.isEmpty(tree.variety)} ? ${tree.variety} : (${tree.speciesMessageKey} != null ? #{${tree.speciesMessageKey}} : ${tree.species})">Species</span>
             </a>
             <div class="tree-tooltip" th:if="${tree != null and not tree.emptySpot}">
-                <strong th:text="${tree.species}">Species</strong>
+                <strong th:text="${tree.speciesMessageKey} != null ? #{${tree.speciesMessageKey}} : ${tree.species}">Species</strong>
                 <span th:if="${tree.variety}" th:text="${tree.variety}">Variety</span>
                 <dl>
                     <div th:if="${tree.plantingMonth != null}">

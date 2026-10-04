@@ -35,8 +35,10 @@
             th:class="${tree == null} ? 'empty' : (${tree.emptySpot} ? 'placeholder' : 'occupied')">
             <span th:if="${tree != null and tree.emptySpot}" class="grass-icon" th:insert="~{fragments/grass-icon :: grass}"></span>
             <span th:if="${tree != null and tree.emptySpot}" class="empty-label" th:text="#{orchard.grid.emptySpotLabel}">Empty</span>
-            <span th:if="${tree != null and not tree.emptySpot}" class="species" th:text="${tree.species}">Species</span>
-            <span th:if="${tree != null and not tree.emptySpot and tree.variety != null}" class="variety" th:text="${tree.variety}">Variety</span>
+            <span th:if="${tree != null and not tree.emptySpot}" class="species"
+                  th:text="${not #strings.isEmpty(tree.variety)} ? ${tree.variety} : (${tree.speciesMessageKey} != null ? #{${tree.speciesMessageKey}} : ${tree.species})">Species</span>
+            <span th:if="${tree != null and not tree.emptySpot and not #strings.isEmpty(tree.variety)}" class="variety"
+                  th:text="${tree.speciesMessageKey} != null ? #{${tree.speciesMessageKey}} : ${tree.species}">Species</span>
         </td>
     </tr>
 </table>

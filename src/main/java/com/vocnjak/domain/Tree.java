@@ -282,4 +282,8 @@ public class Tree {
     public String getSpeciesImageFileName() {
         return FruitSpeciesCatalog.imageFileNameFor(species);
     }
+
+    public String getSpeciesMessageKey() {
+        return FruitSpeciesCatalog.messageKeyFor(species);
+    }
 }

@@ -8,6 +8,7 @@ public final class FruitSpeciesCatalog {
     public static final String OTHER = "__other__";
 
     private static final Map<String, String> IMAGE_FILES = new LinkedHashMap<>();
+    private static final Map<String, String> MESSAGE_KEYS = new LinkedHashMap<>();
 
     static {
         IMAGE_FILES.put("Apple", "apple.jpg");
@@ -23,6 +24,20 @@ public final class FruitSpeciesCatalog {
         IMAGE_FILES.put("Vineyard peach", "vineyard_peach.jpg");
         IMAGE_FILES.put("Walnut", "walnut.jpg");
         IMAGE_FILES.put("Wild pear (Takisa)", "wild_pear_takisa.jpg");
+
+        MESSAGE_KEYS.put("Apple", "species.apple");
+        MESSAGE_KEYS.put("Apricot", "species.apricot");
+        MESSAGE_KEYS.put("Cherry", "species.cherry");
+        MESSAGE_KEYS.put("Dogwood berry", "species.dogwoodBerry");
+        MESSAGE_KEYS.put("Hazelnut", "species.hazelnut");
+        MESSAGE_KEYS.put("Pear", "species.pear");
+        MESSAGE_KEYS.put("Plum", "species.plum");
+        MESSAGE_KEYS.put("Quince", "species.quince");
+        MESSAGE_KEYS.put("Sorb fruit", "species.sorbFruit");
+        MESSAGE_KEYS.put("Sour cherry", "species.sourCherry");
+        MESSAGE_KEYS.put("Vineyard peach", "species.vineyardPeach");
+        MESSAGE_KEYS.put("Walnut", "species.walnut");
+        MESSAGE_KEYS.put("Wild pear (Takisa)", "species.wildPearTakisa");
     }
 
     private FruitSpeciesCatalog() {
@@ -34,5 +49,9 @@ public final class FruitSpeciesCatalog {
 
     public static boolean isCanonical(String species) {
         return IMAGE_FILES.containsKey(species);
+    }
+
+    public static String messageKeyFor(String species) {
+        return MESSAGE_KEYS.get(species);
     }
 }
