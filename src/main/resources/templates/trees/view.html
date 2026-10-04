@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${tree.species}">Tree</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/langswitch :: langswitch}"></div>
+
+<h1 th:text="${tree.species}">Species</h1>
+
+<div class="card card-wide tree-detail">
+
+    <section class="form-section">
+        <h2 th:text="#{tree.section.details}">Tree Details</h2>
+        <dl>
+            <dt th:text="#{tree.field.variety}">Variety / Cultivar</dt>
+            <dd th:text="${tree.variety} ?: '—'">Variety</dd>
+
+            <dt th:text="#{tree.field.rootstock}">Rootstock</dt>
+            <dd th:text="${tree.rootstock} ?: '—'">Rootstock</dd>
+
+            <dt th:text="#{tree.field.plantingMonth}">Planting month</dt>
+            <dd th:text="${tree.plantingMonth != null} ? #{${'month.' + tree.plantingMonth}} : '—'">Planting month</dd>
+
+            <dt th:text="#{tree.field.plantingYear}">Planting year</dt>
+            <dd th:text="${tree.plantingYear} ?: '—'">Planting year</dd>
+
+            <dt th:text="#{tree.field.position}">Position</dt>
+            <dd th:text="#{tree.position(${tree.rowIndex + 1},${tree.colIndex + 1})}">Position</dd>
+        </dl>
+    </section>
+
+    <section class="form-section">
+        <h2 th:text="#{tree.section.seasonal}">Seasonal Development</h2>
+        <dl>
+            <dt th:text="#{tree.field.budBreak}">Bud break</dt>
+            <dd th:text="${tree.budBreakMonth != null} ? #{${'month.' + tree.budBreakMonth}} : '—'">Bud break</dd>
+
+            <dt th:text="#{tree.field.bloom}">Bloom</dt>
+            <dd th:text="${tree.bloomMonth != null} ? #{${'month.' + tree.bloomMonth}} : '—'">Bloom</dd>
+
+            <dt th:text="#{tree.field.fruitSet}">Fruit set</dt>
+            <dd th:text="${tree.fruitSetMonth != null} ? #{${'month.' + tree.fruitSetMonth}} : '—'">Fruit set</dd>
+
+            <dt th:text="#{tree.field.harvest}">Harvest</dt>
+            <dd th:text="${tree.harvestMonth != null} ? #{${'month.' + tree.harvestMonth}} : '—'">Harvest</dd>
+        </dl>
+    </section>
+
+    <section class="form-section">
+        <h2 th:text="#{tree.section.problems}">Problems Observed</h2>
+        <dl>
+            <dt th:text="#{tree.field.pests}">Pests</dt>
+            <dd th:text="${tree.pests} ?: '—'">Pests</dd>
+
+            <dt th:text="#{tree.field.diseases}">Diseases</dt>
+            <dd th:text="${tree.diseases} ?: '—'">Diseases</dd>
+
+            <dt th:text="#{tree.field.weatherDamage}">Weather damage</dt>
+            <dd th:text="${tree.weatherDamage} ?: '—'">Weather damage</dd>
+
+            <dt th:text="#{tree.field.nutrientSymptoms}">Nutrient symptoms</dt>
+            <dd th:text="${tree.nutrientSymptoms} ?: '—'">Nutrient symptoms</dd>
+
+            <dt th:text="#{tree.field.treatmentsUsed}">Treatments used</dt>
+            <dd th:text="${tree.treatmentsUsed} ?: '—'">Treatments used</dd>
+        </dl>
+    </section>
+
+    <section class="form-section">
+        <h2 th:text="#{tree.section.safety}">Inputs and Safety</h2>
+        <ul class="treatment-list" th:if="${not #lists.isEmpty(treatments)}">
+            <li class="treatment-row" th:each="treatment : ${treatments}">
+                <div class="treatment-info">
+                    <strong th:text="${treatment.productName}">Product</strong>
+                    <span th:if="${treatment.rate}" th:text="${treatment.rate}">Rate</span>
+                    <span th:text="${treatment.applicationDate}">Date</span>
+                    <span th:if="${treatment.harvestIntervalDays}"
+                          th:text="#{treatment.harvestInterval(${treatment.harvestIntervalDays})}">Interval</span>
+                </div>
+                <form th:action="@{/orchards/{orchardId}/trees/{treeId}/treatments/{treatmentId}/delete(orchardId=${orchard.id},treeId=${tree.id},treatmentId=${treatment.id})}" method="post">
+                    <button class="btn btn-danger" type="submit" th:text="#{common.delete}">Delete</button>
+                </form>
+            </li>
+        </ul>
+        <p class="empty-state" th:if="${#lists.isEmpty(treatments)}" th:text="#{treatment.empty}">No treatments logged yet.</p>
+        <a class="btn" th:href="@{/orchards/{orchardId}/trees/{treeId}/treatments/new(orchardId=${orchard.id},treeId=${tree.id})}" th:text="#{treatment.addButton}">+ Add treatment</a>
+    </section>
+
+    <section class="form-section">
+        <h2 th:text="#{tree.section.notesPhoto}">Notes and Photo</h2>
+        <img th:if="${tree.hasImage()}" class="tree-photo"
+             th:src="@{/orchards/{orchardId}/trees/{treeId}/image(orchardId=${orchard.id},treeId=${tree.id})}"
+             th:alt="#{tree.photoAlt}"/>
+        <dl>
+            <dt th:text="#{tree.field.notes}">Notes</dt>
+            <dd th:text="${tree.notes} ?: '—'">Notes</dd>
+        </dl>
+    </section>
+
+    <div class="tree-detail-actions">
+        <a class="btn" th:href="@{/orchards/{orchardId}/trees/{treeId}/edit(orchardId=${orchard.id},treeId=${tree.id})}" th:text="#{common.edit}">Edit</a>
+        <form th:action="@{/orchards/{orchardId}/trees/{treeId}/delete(orchardId=${orchard.id},treeId=${tree.id})}" method="post">
+            <button class="btn btn-danger" type="submit" th:text="#{common.delete}">Delete</button>
+        </form>
+    </div>
+</div>
+
+<p><a class="back-link" th:href="@{/orchards/{id}(id=${orchard.id})}" th:text="#{common.backToGrid}">&larr; Back to grid</a></p>
+</body>
+</html>

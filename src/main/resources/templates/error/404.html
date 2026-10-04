@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{error.notFound.title}">Not found</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/langswitch :: langswitch}"></div>
+
+<h1 th:text="#{error.notFound.heading}">Not found</h1>
+<p th:text="#{error.notFound.message}">The orchard or tree you're looking for doesn't exist.</p>
+<p><a class="back-link" href="/orchards" th:text="#{common.backToOrchards}">Back to orchards</a></p>
+</body>
+</html>

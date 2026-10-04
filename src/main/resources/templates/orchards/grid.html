@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="${orchard.name}">Orchard</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/langswitch :: langswitch}"></div>
+
+<h1 th:text="${orchard.name}">Orchard</h1>
+
+<p class="orientation-note" th:if="${orchard.orientationNote}" th:text="'📍 ' + ${orchard.orientationNote}">Orientation note</p>
+
+<p class="error" th:if="${error}" th:text="${error}">Error</p>
+
+<p class="export-links">
+    <a class="btn btn-secondary" th:href="@{/orchards/{id}/export(id=${orchard.id},format='detailed')}" th:text="#{orchard.grid.exportDetailed}">Detailed report (PDF)</a>
+    <a class="btn btn-secondary" th:href="@{/orchards/{id}/export(id=${orchard.id},format='map')}" th:text="#{orchard.grid.exportMap}">Printable map (PDF)</a>
+</p>
+
+<table class="orchard-grid">
+    <tr>
+        <th class="grid-corner"></th>
+        <th class="grid-col-label" th:each="colNum : ${#numbers.sequence(1, orchard.columns)}" th:text="${colNum}">1</th>
+        <th class="grid-add-col">
+            <form th:action="@{/orchards/{id}/columns(id=${orchard.id})}" method="post">
+                <button class="grid-add-btn" type="submit" th:title="#{orchard.grid.addColumnTitle}">+</button>
+            </form>
+        </th>
+    </tr>
+    <tr th:each="rowCells, rowStat : ${grid}">
+        <th class="grid-row-label" th:text="${rowStat.index + 1}">1</th>
+        <td th:each="tree, colStat : ${rowCells}"
+            th:class="${tree == null} ? 'cell empty' : 'cell occupied'">
+            <a class="empty-link" th:if="${tree == null}"
+               th:href="@{/orchards/{orchardId}/trees/new(orchardId=${orchard.id},row=${rowStat.index},col=${colStat.index})}">+</a>
+            <a class="tree-link" th:if="${tree != null}"
+               th:href="@{/orchards/{orchardId}/trees/{treeId}(orchardId=${orchard.id},treeId=${tree.id})}">
+                <span class="tree-visual">
+                    <img th:if="${tree.hasImage()}" class="tree-thumb"
+                         th:src="@{/orchards/{orchardId}/trees/{treeId}/image(orchardId=${orchard.id},treeId=${tree.id})}"
+                         th:alt="${tree.species}"/>
+                    <span th:unless="${tree.hasImage()}" class="tree-icon">🌳</span>
+                </span>
+                <span class="tree-label" th:text="${tree.species}">Species</span>
+            </a>
+            <div class="tree-tooltip" th:if="${tree != null}">
+                <strong th:text="${tree.species}">Species</strong>
+                <span th:if="${tree.variety}" th:text="${tree.variety}">Variety</span>
+                <dl>
+                    <div th:if="${tree.plantingMonth != null}">
+                        <dt th:text="#{tree.field.plantingMonth}">Planting month</dt>
+                        <dd th:text="#{${'month.' + tree.plantingMonth}}">Month</dd>
+                    </div>
+                    <div th:if="${tree.plantingYear != null}">
+                        <dt th:text="#{tree.field.plantingYear}">Planting year</dt>
+                        <dd th:text="${tree.plantingYear}">Year</dd>
+                    </div>
+                    <div th:if="${tree.bloomMonth != null}">
+                        <dt th:text="#{tree.field.bloom}">Bloom</dt>
+                        <dd th:text="#{${'month.' + tree.bloomMonth}}">Month</dd>
+                    </div>
+                    <div th:if="${tree.harvestMonth != null}">
+                        <dt th:text="#{tree.field.harvest}">Harvest</dt>
+                        <dd th:text="#{${'month.' + tree.harvestMonth}}">Month</dd>
+                    </div>
+                </dl>
+                <p th:if="${tree.notes}" th:text="${#strings.abbreviate(tree.notes, 120)}">Notes</p>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <th class="grid-row-label"></th>
+        <td class="grid-add-row" th:colspan="${orchard.columns}">
+            <form th:action="@{/orchards/{id}/rows(id=${orchard.id})}" method="post">
+                <button class="grid-add-btn grid-add-row-btn" type="submit" th:text="#{orchard.grid.addRow}">+ Add row</button>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<p>
+    <a class="back-link" th:href="@{/orchards}" th:text="#{common.backToOrchards}">&larr; Back to orchards</a>
+</p>
+</body>
+</html>

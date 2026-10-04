@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{orchard.list.title}">Vocnjak — Orchards</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/langswitch :: langswitch}"></div>
+
+<div class="page-header">
+    <h1 th:text="#{orchard.list.heading}">Orchards</h1>
+    <a class="btn" th:href="@{/orchards/new}" th:text="#{orchard.list.newButton}">+ New orchard</a>
+</div>
+
+<ul class="orchard-list" th:if="${not #lists.isEmpty(orchards)}">
+    <li class="orchard-card" th:each="orchard : ${orchards}">
+        <div class="orchard-card-info">
+            <a class="orchard-card-name" th:href="@{/orchards/{id}(id=${orchard.id})}" th:text="${orchard.name}">Name</a>
+            <span class="orchard-card-dims" th:text="${orchard.rows} + ' × ' + ${orchard.columns}"></span>
+        </div>
+        <form th:action="@{/orchards/{id}/delete(id=${orchard.id})}" method="post">
+            <button class="btn btn-danger" type="submit" th:text="#{common.delete}">Delete</button>
+        </form>
+    </li>
+</ul>
+
+<p class="empty-state" th:if="${#lists.isEmpty(orchards)}" th:text="#{orchard.list.empty}">No orchards yet — plant your first one above.</p>
+</body>
+</html>

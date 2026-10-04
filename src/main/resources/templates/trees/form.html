@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"/>
+    <title th:text="#{tree.form.title}">Vocnjak — Tree</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+<div th:replace="~{fragments/langswitch :: langswitch}"></div>
+
+<h1 th:text="#{tree.position(${row + 1},${col + 1})}">Tree</h1>
+
+<p class="error" th:if="${error}" th:text="${error}">Error</p>
+
+<div class="card card-wide">
+    <form th:action="${treeId} != null
+                      ? @{/orchards/{orchardId}/trees/{treeId}(orchardId=${orchard.id},treeId=${treeId})}
+                      : @{/orchards/{orchardId}/trees(orchardId=${orchard.id},row=${row},col=${col})}"
+          th:object="${treeForm}" method="post" enctype="multipart/form-data">
+
+        <input type="hidden" name="row" th:value="${row}"/>
+        <input type="hidden" name="col" th:value="${col}"/>
+
+        <section class="form-section">
+            <h2 th:text="#{tree.section.details}">Tree Details</h2>
+            <div class="field">
+                <label for="species" th:text="#{tree.field.species}">Species</label>
+                <input type="text" id="species" th:field="*{species}"/>
+                <span class="error" th:if="${#fields.hasErrors('species')}" th:errors="*{species}"></span>
+            </div>
+            <div class="field">
+                <label for="variety" th:text="#{tree.field.variety}">Variety / Cultivar</label>
+                <input type="text" id="variety" th:field="*{variety}"/>
+                <span class="error" th:if="${#fields.hasErrors('variety')}" th:errors="*{variety}"></span>
+            </div>
+            <div class="field">
+                <label for="rootstock" th:text="#{tree.field.rootstock}">Rootstock</label>
+                <input type="text" id="rootstock" th:field="*{rootstock}"/>
+                <span class="error" th:if="${#fields.hasErrors('rootstock')}" th:errors="*{rootstock}"></span>
+            </div>
+            <div class="field field-row">
+                <div>
+                    <label for="plantingMonth" th:text="#{tree.field.plantingMonth}">Planting month</label>
+                    <select id="plantingMonth" th:field="*{plantingMonth}">
+                        <option value="">—</option>
+                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="#{${'month.' + m}}">Month</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="plantingYear" th:text="#{tree.field.plantingYear}">Planting year</label>
+                    <select id="plantingYear" th:field="*{plantingYear}">
+                        <option value="">—</option>
+                        <option th:each="y : ${#numbers.sequence(2084, 1951, -1)}" th:value="${y}" th:text="${y}">Year</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 th:text="#{tree.section.seasonal}">Seasonal Development</h2>
+            <div class="field field-row">
+                <div>
+                    <label for="budBreakMonth" th:text="#{tree.field.budBreak}">Bud break</label>
+                    <select id="budBreakMonth" th:field="*{budBreakMonth}">
+                        <option value="">—</option>
+                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="#{${'month.' + m}}">Month</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="bloomMonth" th:text="#{tree.field.bloom}">Bloom</label>
+                    <select id="bloomMonth" th:field="*{bloomMonth}">
+                        <option value="">—</option>
+                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="#{${'month.' + m}}">Month</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field field-row">
+                <div>
+                    <label for="fruitSetMonth" th:text="#{tree.field.fruitSet}">Fruit set</label>
+                    <select id="fruitSetMonth" th:field="*{fruitSetMonth}">
+                        <option value="">—</option>
+                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="#{${'month.' + m}}">Month</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="harvestMonth" th:text="#{tree.field.harvest}">Harvest</label>
+                    <select id="harvestMonth" th:field="*{harvestMonth}">
+                        <option value="">—</option>
+                        <option th:each="m : ${#numbers.sequence(1, 12)}" th:value="${m}" th:text="#{${'month.' + m}}">Month</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 th:text="#{tree.section.problems}">Problems Observed</h2>
+            <div class="field">
+                <label for="pests" th:text="#{tree.field.pests}">Pests</label>
+                <textarea id="pests" th:field="*{pests}"></textarea>
+            </div>
+            <div class="field">
+                <label for="diseases" th:text="#{tree.field.diseases}">Diseases</label>
+                <textarea id="diseases" th:field="*{diseases}"></textarea>
+            </div>
+            <div class="field">
+                <label for="weatherDamage" th:text="#{tree.field.weatherDamage}">Weather damage</label>
+                <textarea id="weatherDamage" th:field="*{weatherDamage}"></textarea>
+            </div>
+            <div class="field">
+                <label for="nutrientSymptoms" th:text="#{tree.field.nutrientSymptoms}">Nutrient symptoms</label>
+                <textarea id="nutrientSymptoms" th:field="*{nutrientSymptoms}"></textarea>
+            </div>
+            <div class="field">
+                <label for="treatmentsUsed" th:text="#{tree.field.treatmentsUsed}">Treatments used</label>
+                <textarea id="treatmentsUsed" th:field="*{treatmentsUsed}"></textarea>
+            </div>
+        </section>
+
+        <section class="form-section">
+            <h2 th:text="#{tree.section.notesPhoto}">Notes and Photo</h2>
+            <div class="field">
+                <label for="notes" th:text="#{tree.field.notes}">Notes</label>
+                <textarea id="notes" th:field="*{notes}"></textarea>
+                <span class="error" th:if="${#fields.hasErrors('notes')}" th:errors="*{notes}"></span>
+            </div>
+            <div class="field image-field" th:if="${hasImage}">
+                <label th:text="#{tree.field.currentPhoto}">Current photo</label>
+                <img class="current-photo"
+                     th:src="@{/orchards/{orchardId}/trees/{treeId}/image(orchardId=${orchard.id},treeId=${treeId})}"
+                     th:alt="#{tree.field.currentPhotoAlt}"/>
+            </div>
+            <div class="field">
+                <label for="image" th:text="#{tree.field.photo}">Photo</label>
+                <input type="file" id="image" th:field="*{image}" accept="image/jpeg,image/png,image/webp"/>
+            </div>
+        </section>
+
+        <button class="btn" type="submit" th:text="#{common.save}">Save</button>
+    </form>
+</div>
+
+<p><a class="back-link" th:href="@{/orchards/{id}(id=${orchard.id})}" th:text="#{common.backToGrid}">&larr; Back to grid</a></p>
+</body>
+</html>
