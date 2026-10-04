@@ -53,6 +53,32 @@ public class TreeService {
         return tree;
     }
 
+    public Tree copyTree(Long orchardId, Long sourceTreeId, int row, int col) {
+        Orchard orchard = orchardService.getOrchard(orchardId);
+        requireWithinBounds(orchard, row, col);
+        if (treeRepository.existsByOrchardIdAndRowIndexAndColIndex(orchardId, row, col)) {
+            throw new CellOccupiedException("error.cellOccupied", row, col);
+        }
+        Tree source = getTree(sourceTreeId);
+        Tree tree = new Tree(orchard, row, col);
+        tree.setSpecies(source.getSpecies());
+        tree.setVariety(source.getVariety());
+        tree.setRootstock(source.getRootstock());
+        tree.setPlantingMonth(source.getPlantingMonth());
+        tree.setPlantingYear(source.getPlantingYear());
+        tree.setBudBreakMonth(source.getBudBreakMonth());
+        tree.setBloomMonth(source.getBloomMonth());
+        tree.setFruitSetMonth(source.getFruitSetMonth());
+        tree.setHarvestMonth(source.getHarvestMonth());
+        tree.setPests(source.getPests());
+        tree.setDiseases(source.getDiseases());
+        tree.setWeatherDamage(source.getWeatherDamage());
+        tree.setNutrientSymptoms(source.getNutrientSymptoms());
+        tree.setTreatmentsUsed(source.getTreatmentsUsed());
+        tree.setNotes(source.getNotes());
+        return treeRepository.save(tree);
+    }
+
     public Tree markEmpty(Long orchardId, int row, int col) {
         Orchard orchard = orchardService.getOrchard(orchardId);
         requireWithinBounds(orchard, row, col);

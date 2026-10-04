@@ -422,6 +422,91 @@ a {
     z-index: 2;
 }
 
+.paste-form {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    z-index: 2;
+}
+
+.paste-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--green-light);
+    font-size: 0.85rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0.85;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.paste-btn:hover {
+    opacity: 1;
+    background: #c9e4cd;
+}
+
+.copy-form {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    z-index: 2;
+}
+
+.copy-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.7);
+    font-size: 0.7rem;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s ease, background 0.15s ease;
+}
+
+.orchard-grid td.occupied:hover .copy-btn {
+    opacity: 0.85;
+}
+
+.copy-btn:hover {
+    opacity: 1 !important;
+    background: #ffffff;
+}
+
+.clipboard-banner {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--green-light);
+    border: 1px solid #c9e4cd;
+    border-radius: 8px;
+    padding: 0.5rem 0.8rem;
+    margin-bottom: 0.8rem;
+    font-size: 0.9rem;
+    color: var(--green-dark);
+}
+
+.clipboard-clear-btn {
+    border: none;
+    background: transparent;
+    color: var(--green-dark);
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+}
+
 .grass-icon {
     display: inline-block;
 }

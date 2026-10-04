@@ -197,6 +197,42 @@ class TreeServiceTest {
         assertThat(tree.getTreatmentsUsed()).isEqualTo("Copper spray in March");
     }
 
+    @Test
+    void copyTree_copiesFieldsIntoNewCell_whenCellFree() {
+        when(orchardRepository.findById(1L)).thenReturn(Optional.of(orchard));
+        when(treeRepository.existsByOrchardIdAndRowIndexAndColIndex(1L, 2, 2)).thenReturn(false);
+        when(treeRepository.save(any(Tree.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Tree source = new Tree(orchard, 1, 1);
+        source.setSpecies("Apple");
+        source.setVariety("Golden Delicious");
+        source.setRootstock("M9");
+        source.setPlantingYear(2023);
+        setId(source, 7L);
+        when(treeRepository.findById(7L)).thenReturn(Optional.of(source));
+
+        Tree copy = treeService.copyTree(1L, 7L, 2, 2);
+
+        assertThat(copy.getRowIndex()).isEqualTo(2);
+        assertThat(copy.getColIndex()).isEqualTo(2);
+        assertThat(copy.getSpecies()).isEqualTo("Apple");
+        assertThat(copy.getVariety()).isEqualTo("Golden Delicious");
+        assertThat(copy.getRootstock()).isEqualTo("M9");
+        assertThat(copy.getPlantingYear()).isEqualTo(2023);
+        assertThat(copy.hasImage()).isFalse();
+    }
+
+    @Test
+    void copyTree_throwsCellOccupiedException_whenOccupied() {
+        when(orchardRepository.findById(1L)).thenReturn(Optional.of(orchard));
+        when(treeRepository.existsByOrchardIdAndRowIndexAndColIndex(1L, 2, 2)).thenReturn(true);
+
+        assertThatThrownBy(() -> treeService.copyTree(1L, 7L, 2, 2))
+                .isInstanceOf(CellOccupiedException.class);
+
+        verify(treeRepository, never()).save(any());
+    }
+
     private TreeForm treeForm(String species, String variety) {
         TreeForm form = new TreeForm();
         form.setSpecies(species);

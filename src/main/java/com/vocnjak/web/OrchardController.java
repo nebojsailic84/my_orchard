@@ -1,10 +1,13 @@
 package com.vocnjak.web;
 
 import com.vocnjak.domain.Orchard;
+import com.vocnjak.domain.Tree;
 import com.vocnjak.service.OrchardService;
 import com.vocnjak.service.TreeService;
+import com.vocnjak.service.exception.NotFoundException;
 import com.vocnjak.service.exception.OutOfBoundsException;
 import com.vocnjak.web.dto.OrchardCreateForm;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -60,11 +63,38 @@ public class OrchardController {
     }
 
     @GetMapping("/orchards/{id}")
-    public String viewGrid(@PathVariable Long id, Model model) {
+    public String viewGrid(@PathVariable Long id, Model model, HttpSession session) {
         Orchard orchard = orchardService.getOrchard(id);
         model.addAttribute("orchard", orchard);
         model.addAttribute("grid", treeService.buildGrid(orchard));
+        Tree clipboardTree = resolveClipboardTree(session);
+        model.addAttribute("clipboardActive", clipboardTree != null);
+        model.addAttribute("clipboardLabel", clipboardTree != null ? labelFor(clipboardTree) : null);
         return "orchards/grid";
+    }
+
+    private Tree resolveClipboardTree(HttpSession session) {
+        Long clipboardTreeId = (Long) session.getAttribute(TreeController.CLIPBOARD_SESSION_KEY);
+        if (clipboardTreeId == null) {
+            return null;
+        }
+        try {
+            return treeService.getTree(clipboardTreeId);
+        } catch (NotFoundException e) {
+            session.removeAttribute(TreeController.CLIPBOARD_SESSION_KEY);
+            return null;
+        }
+    }
+
+    private String labelFor(Tree tree) {
+        if (tree.getVariety() != null && !tree.getVariety().isBlank()) {
+            return tree.getVariety();
+        }
+        String speciesMessageKey = tree.getSpeciesMessageKey();
+        if (speciesMessageKey != null) {
+            return messageSource.getMessage(speciesMessageKey, null, LocaleContextHolder.getLocale());
+        }
+        return tree.getSpecies();
     }
 
     @PostMapping("/orchards/{id}/delete")

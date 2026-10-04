@@ -8,8 +8,10 @@ import com.vocnjak.service.TreeService;
 import com.vocnjak.service.exception.CellOccupiedException;
 import com.vocnjak.service.exception.CodedException;
 import com.vocnjak.service.exception.InvalidImageException;
+import com.vocnjak.service.exception.NotFoundException;
 import com.vocnjak.service.exception.OutOfBoundsException;
 import com.vocnjak.web.dto.TreeForm;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 import org.springframework.context.MessageSource;
@@ -33,6 +35,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/orchards/{orchardId}/trees")
 public class TreeController {
+
+    public static final String CLIPBOARD_SESSION_KEY = "clipboardTreeId";
 
     private final TreeService treeService;
     private final OrchardService orchardService;
@@ -100,6 +104,35 @@ public class TreeController {
             treeService.markEmpty(orchardId, row, col);
         } catch (CellOccupiedException | OutOfBoundsException e) {
             redirectAttributes.addFlashAttribute("error", resolve(e));
+        }
+        return "redirect:/orchards/" + orchardId;
+    }
+
+    @PostMapping("/{treeId}/copy")
+    public String copy(@PathVariable Long orchardId, @PathVariable Long treeId, HttpSession session) {
+        session.setAttribute(CLIPBOARD_SESSION_KEY, treeId);
+        return "redirect:/orchards/" + orchardId;
+    }
+
+    @PostMapping("/clipboard/clear")
+    public String clearClipboard(@PathVariable Long orchardId, HttpSession session) {
+        session.removeAttribute(CLIPBOARD_SESSION_KEY);
+        return "redirect:/orchards/" + orchardId;
+    }
+
+    @PostMapping("/paste")
+    public String paste(@PathVariable Long orchardId,
+                         @RequestParam int row,
+                         @RequestParam int col,
+                         HttpSession session,
+                         RedirectAttributes redirectAttributes) {
+        Long sourceTreeId = (Long) session.getAttribute(CLIPBOARD_SESSION_KEY);
+        if (sourceTreeId != null) {
+            try {
+                treeService.copyTree(orchardId, sourceTreeId, row, col);
+            } catch (CellOccupiedException | OutOfBoundsException | NotFoundException e) {
+                redirectAttributes.addFlashAttribute("error", resolve(e));
+            }
         }
         return "redirect:/orchards/" + orchardId;
     }

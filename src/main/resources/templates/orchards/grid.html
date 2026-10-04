@@ -14,6 +14,13 @@
 
 <p class="error" th:if="${error}" th:text="${error}">Error</p>
 
+<div class="clipboard-banner" th:if="${clipboardActive}">
+    <span th:text="#{orchard.grid.clipboardActive(${clipboardLabel})}">Copied tree</span>
+    <form th:action="@{/orchards/{orchardId}/trees/clipboard/clear(orchardId=${orchard.id})}" method="post">
+        <button class="clipboard-clear-btn" type="submit" th:text="#{orchard.grid.clipboardClear}">Clear</button>
+    </form>
+</div>
+
 <p class="export-links">
     <a class="btn btn-secondary" th:href="@{/orchards/{id}/export(id=${orchard.id},format='detailed')}" th:text="#{orchard.grid.exportDetailed}">Detailed report (PDF)</a>
     <a class="btn btn-secondary" th:href="@{/orchards/{id}/export(id=${orchard.id},format='map')}" th:text="#{orchard.grid.exportMap}">Printable map (PDF)</a>
@@ -42,6 +49,11 @@
                     <span class="grass-icon grass-icon-sm" th:insert="~{fragments/grass-icon :: grass}"></span>
                 </button>
             </form>
+            <form th:if="${tree == null and clipboardActive}" class="paste-form"
+                  th:action="@{/orchards/{orchardId}/trees/paste(orchardId=${orchard.id},row=${rowStat.index},col=${colStat.index})}"
+                  method="post">
+                <button class="paste-btn" type="submit" th:title="#{orchard.grid.pasteTitle(${clipboardLabel})}">📌</button>
+            </form>
             <form th:if="${tree != null and tree.emptySpot}" class="remove-empty-form"
                   th:action="@{/orchards/{orchardId}/trees/{treeId}/delete(orchardId=${orchard.id},treeId=${tree.id})}"
                   method="post">
@@ -66,6 +78,11 @@
                 <span class="tree-label"
                       th:text="${not #strings.isEmpty(tree.variety)} ? ${tree.variety} : (${tree.speciesMessageKey} != null ? #{${tree.speciesMessageKey}} : ${tree.species})">Species</span>
             </a>
+            <form th:if="${tree != null and not tree.emptySpot}" class="copy-form"
+                  th:action="@{/orchards/{orchardId}/trees/{treeId}/copy(orchardId=${orchard.id},treeId=${tree.id})}"
+                  method="post">
+                <button class="copy-btn" type="submit" th:title="#{orchard.grid.copyTitle}">📋</button>
+            </form>
             <div class="tree-tooltip" th:if="${tree != null and not tree.emptySpot}">
                 <strong th:text="${tree.speciesMessageKey} != null ? #{${tree.speciesMessageKey}} : ${tree.species}">Species</strong>
                 <span th:if="${tree.variety}" th:text="${tree.variety}">Variety</span>

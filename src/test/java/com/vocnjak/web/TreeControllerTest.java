@@ -170,6 +170,35 @@ class TreeControllerTest {
         assertThat(gridPageAfter).doesNotContain("cell placeholder");
     }
 
+    @Test
+    void copyTree_thenPasteIntoEmptyCell_createsMatchingTree() throws Exception {
+        String orchardUrl = createOrchard("Copy Orchard", 2, 2);
+
+        mockMvc.perform(post(orchardUrl + "/trees")
+                        .param("row", "0")
+                        .param("col", "0")
+                        .param("species", "Apple")
+                        .param("variety", "Golden Delicious"))
+                .andExpect(status().is3xxRedirection());
+
+        String gridPage = mockMvc.perform(get(orchardUrl))
+                .andReturn().getResponse().getContentAsString();
+        String treeUrl = extractTreeUrl(gridPage, orchardUrl);
+
+        mockMvc.perform(post(treeUrl + "/copy"))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(post(orchardUrl + "/trees/paste")
+                        .param("row", "1")
+                        .param("col", "1"))
+                .andExpect(status().is3xxRedirection());
+
+        String gridAfterPaste = mockMvc.perform(get(orchardUrl))
+                .andReturn().getResponse().getContentAsString();
+        int occurrences = gridAfterPaste.split("Golden Delicious", -1).length - 1;
+        assertThat(occurrences).isEqualTo(2);
+    }
+
     private String extractTreeUrl(String gridPageHtml, String orchardUrl) {
         String marker = orchardUrl + "/trees/";
         int start = gridPageHtml.indexOf(marker);
